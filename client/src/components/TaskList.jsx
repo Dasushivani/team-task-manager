@@ -9,7 +9,7 @@ function TaskList() {
   const fetchTasks = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:5000/api/tasks",
+        "https://team-task-manager-ye0r.onrender.com",
         {
           headers: {
             Authorization: `Bearer ${token}`,

@@ -1,16 +1,20 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/auth";
+const API_URL =
+  "https://team-task-manager-ye0r.onrender.com/api/auth";
 
-// login user
-const loginUser = async (userData) => {
-  const response = await axios.post(`${API_URL}/login`, userData);
+const login = async (email, password) => {
+  const response = await axios.post(
+    `${API_URL}/login`,
+    {
+      email,
+      password,
+    }
+  );
 
   return response.data;
 };
 
-const authService = {
-  loginUser,
+export default {
+  login,
 };
-
-export default authService;
