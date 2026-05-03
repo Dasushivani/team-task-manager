@@ -1,46 +1,56 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const cors = require("cors");
-const dotenv = require("dotenv");
-
-dotenv.config();
-
-const connectDB = require("./config/db");
+require("dotenv").config();
 
 const authRoutes = require("./routes/authRoutes");
 const taskRoutes = require("./routes/taskRoutes");
 
 const app = express();
 
-/* Database Connection */
-connectDB();
+// Middleware
+app.use(express.json());
 
-/* Middleware */
+// CORS Configuration (allows all localhost ports + deployed frontend)
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173",
-      "http://localhost:5174",
-      "https://team-task-manager-gamma-blue.vercel.app",
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    origin: function (origin, callback) {
+      // Allow requests with no origin (Thunder Client, Postman, mobile apps)
+      if (!origin) return callback(null, true);
+
+      // Allow any localhost port during development
+      if (
+        origin.startsWith("http://localhost:") ||
+        origin === "https://team-task-manager-gamma-blue.vercel.app"
+      ) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
     credentials: true,
   })
 );
 
-app.use(express.json());
+// Routes
+app.get("/", (req, res) => {
+  res.json({ message: "API is working" });
+});
 
-/* API Routes */
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
 
-/* Test Route */
-app.get("/", (req, res) => {
-  res.json({
-    message: "API is working",
+// MongoDB Connection
+mongoose
+  .connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log("MongoDB Connected");
+  })
+  .catch((err) => {
+    console.log("Database connection failed:", err.message);
   });
-});
 
-/* Server */
+// Server
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {

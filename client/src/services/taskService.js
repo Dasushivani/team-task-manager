@@ -1,47 +1,49 @@
 import axios from "axios";
 
-const API_URL =  "https://team-task-manager-ye0r.onrender.com/api/tasks";
+const API_URL = "http://localhost:5000/api/tasks";
 
-// get dashboard stats
-const getTaskStats = async () => {
-  const token = localStorage.getItem("token");
-
-  const config = {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  };
-
-  const response = await axios.get(
-    `${API_URL}/stats`,
-    config
-  );
-
-  return response.data;
-};
-
-// create new task
 const createTask = async (taskData) => {
   const token = localStorage.getItem("token");
 
-  const config = {
+  const response = await axios.post(API_URL, taskData, {
     headers: {
       Authorization: `Bearer ${token}`,
     },
-  };
+  });
 
-  const response = await axios.post(
-    API_URL,
-    taskData,
-    config
+  return response.data;
+};
+
+const getTasks = async () => {
+  const token = localStorage.getItem("token");
+
+  const response = await axios.get(API_URL, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return response.data;
+};
+
+const updateTaskStatus = async (taskId, status) => {
+  const token = localStorage.getItem("token");
+
+  const response = await axios.put(
+    `${API_URL}/${taskId}`,
+    { status },
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
   );
 
   return response.data;
 };
 
-const taskService = {
-  getTaskStats,
+export default {
   createTask,
+  getTasks,
+  updateTaskStatus,
 };
-
-export default taskService;

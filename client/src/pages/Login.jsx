@@ -1,102 +1,75 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import authService from "../services/authService";
 
-function Login() {
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     try {
-      const response = await authService.loginUser({
-        email,
-        password,
-      });
+      const data = await authService.login(email, password);
 
-      // save token + user
-      localStorage.setItem("token", response.token);
-      localStorage.setItem(
-        "user",
-        JSON.stringify(response.user)
+      console.log("Login Success:", data);
+
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
+      alert("Login successful!");
+
+      navigate("/dashboard");
+    } catch (error) {
+      console.error(
+        "Login failed:",
+        error.response?.data || error.message
       );
 
-      console.log("Login Success:", response);
-    } catch (error) {
-      console.log(
+      alert(
         error.response?.data?.message || "Login failed"
       );
     }
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "100vh",
-        backgroundColor: "#f4f4f4",
-      }}
-    >
+    <div className="flex justify-center items-center min-h-screen bg-gray-100">
       <form
-        onSubmit={handleSubmit}
-        style={{
-          background: "white",
-          padding: "30px",
-          borderRadius: "10px",
-          boxShadow: "0 0 10px rgba(0,0,0,0.1)",
-          width: "300px",
-        }}
+        onSubmit={handleLogin}
+        className="bg-white p-8 rounded shadow-md w-96"
       >
-        <h2 style={{ textAlign: "center" }}>Login</h2>
+        <h2 className="text-2xl font-bold mb-6 text-center">
+          Login
+        </h2>
 
-        <div style={{ marginBottom: "15px" }}>
-          <label>Email:</label>
-          <input
-            type="email"
-            placeholder="Enter email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "8px",
-              marginTop: "5px",
-            }}
-          />
-        </div>
+        <input
+          type="email"
+          placeholder="Enter email"
+          className="w-full p-2 border mb-4 rounded"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
 
-        <div style={{ marginBottom: "15px" }}>
-          <label>Password:</label>
-          <input
-            type="password"
-            placeholder="Enter password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "8px",
-              marginTop: "5px",
-            }}
-          />
-        </div>
+        <input
+          type="password"
+          placeholder="Enter password"
+          className="w-full p-2 border mb-4 rounded"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
 
         <button
           type="submit"
-          style={{
-            width: "100%",
-            padding: "10px",
-            backgroundColor: "blue",
-            color: "white",
-            border: "none",
-            cursor: "pointer",
-          }}
+          className="w-full bg-blue-500 text-white p-2 rounded"
         >
           Login
         </button>
       </form>
     </div>
   );
-}
+};
 
 export default Login;

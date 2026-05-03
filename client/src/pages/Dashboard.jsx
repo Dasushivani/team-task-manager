@@ -1,130 +1,114 @@
 import { useEffect, useState } from "react";
-import taskService from "../services/taskService";
+import { useNavigate } from "react-router-dom";
 import TaskForm from "../components/TaskForm";
 import TaskList from "../components/TaskList";
+import taskService from "../services/taskService";
 
-function Dashboard() {
+const Dashboard = () => {
+  const navigate = useNavigate();
+
   const user = JSON.parse(localStorage.getItem("user"));
+  const [tasks, setTasks] = useState([]);
 
-  const [stats, setStats] = useState({
-    totalTasks: 0,
-    pendingTasks: 0,
-    inProgressTasks: 0,
-    completedTasks: 0,
-  });
+  const fetchTasks = async () => {
+    try {
+      const data = await taskService.getTasks();
+
+      setTasks(
+        Array.isArray(data) ? data : data.tasks || []
+      );
+    } catch (error) {
+      console.error(
+        "Failed to fetch tasks:",
+        error.response?.data || error.message
+      );
+
+      setTasks([]);
+    }
+  };
 
   useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const data = await taskService.getTaskStats();
-        setStats(data);
-      } catch (error) {
-        console.log("Failed to load stats");
-      }
-    };
-
-    fetchStats();
+    fetchTasks();
   }, []);
+
+  const handleTaskCreated = async () => {
+    await fetchTasks();
+  };
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    window.location.reload();
+
+    alert("Logged out successfully!");
+
+    navigate("/");
   };
 
+  const totalTasks = tasks.length;
+
+  const pendingTasks = tasks.filter(
+    (task) => task.status === "pending"
+  ).length;
+
+  const inProgressTasks = tasks.filter(
+    (task) => task.status === "in-progress"
+  ).length;
+
+  const completedTasks = tasks.filter(
+    (task) => task.status === "completed"
+  ).length;
+
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        backgroundColor: "#f4f4f4",
-        padding: "40px",
-        fontFamily: "Arial, sans-serif",
-      }}
-    >
-      <div
-        style={{
-          maxWidth: "1000px",
-          margin: "0 auto",
-          background: "white",
-          padding: "40px",
-          borderRadius: "12px",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-          textAlign: "center",
-        }}
-      >
-        <h1>Welcome, {user?.name}</h1>
-        <h2>Role: {user?.role}</h2>
+    <div className="p-6 bg-gray-100 min-h-screen">
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-3xl font-bold">
+            Welcome, {user?.name}
+          </h1>
 
-        {/* Stats */}
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: "20px",
-            marginTop: "30px",
-          }}
-        >
-          <div style={cardStyle("#e3f2fd")}>
-            <h3>Total Tasks</h3>
-            <p style={numberStyle}>{stats.totalTasks}</p>
-          </div>
-
-          <div style={cardStyle("#fff3e0")}>
-            <h3>Pending</h3>
-            <p style={numberStyle}>{stats.pendingTasks}</p>
-          </div>
-
-          <div style={cardStyle("#ede7f6")}>
-            <h3>In Progress</h3>
-            <p style={numberStyle}>{stats.inProgressTasks}</p>
-          </div>
-
-          <div style={cardStyle("#e8f5e9")}>
-            <h3>Completed</h3>
-            <p style={numberStyle}>{stats.completedTasks}</p>
-          </div>
+          <p className="text-gray-700">
+            Role: {user?.role}
+          </p>
         </div>
 
-        {/* Task Form */}
-        <TaskForm />
-
-        {/* Task List */}
-        <TaskList />
-
-        {/* Logout */}
         <button
           onClick={handleLogout}
-          style={{
-            marginTop: "40px",
-            padding: "12px 30px",
-            backgroundColor: "red",
-            color: "white",
-            border: "none",
-            borderRadius: "6px",
-            cursor: "pointer",
-            fontSize: "16px",
-          }}
+          className="bg-red-500 text-white px-4 py-2 rounded"
         >
           Logout
         </button>
       </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div className="bg-blue-200 p-4 rounded shadow">
+          <h2 className="font-bold">Total Tasks</h2>
+          <p className="text-2xl">{totalTasks}</p>
+        </div>
+
+        <div className="bg-yellow-200 p-4 rounded shadow">
+          <h2 className="font-bold">Pending</h2>
+          <p className="text-2xl">{pendingTasks}</p>
+        </div>
+
+        <div className="bg-purple-200 p-4 rounded shadow">
+          <h2 className="font-bold">In Progress</h2>
+          <p className="text-2xl">{inProgressTasks}</p>
+        </div>
+
+        <div className="bg-green-200 p-4 rounded shadow">
+          <h2 className="font-bold">Completed</h2>
+          <p className="text-2xl">{completedTasks}</p>
+        </div>
+      </div>
+
+      <TaskForm onTaskCreated={handleTaskCreated} />
+
+      <TaskList
+        tasks={tasks}
+        refreshTasks={fetchTasks}
+      />
     </div>
   );
-}
-
-/* Styles */
-const cardStyle = (bg) => ({
-  flex: "1",
-  minWidth: "180px",
-  backgroundColor: bg,
-  padding: "25px",
-  borderRadius: "10px",
-});
-
-const numberStyle = {
-  fontSize: "24px",
-  fontWeight: "bold",
 };
 
 export default Dashboard;
