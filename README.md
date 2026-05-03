@@ -1,45 +1,61 @@
 # Team Task Manager
 
-##  Features
+## Live Demo
+Frontend (Vercel): https://team-task-manager-3kxd.vercel.app  
+Backend (Render): https://team-task-manager-ye0r.onrender.com  
 
-* User Authentication (JWT)
-* Admin & Member roles
-* Create & assign tasks
-* Task status tracking (Pending, In Progress, Completed)
-* Dashboard with live stats
+---
 
-##  Tech Stack
+## GitHub Repository
+https://github.com/Dasushivani/team-task-manager
 
-* Frontend: React (Vite)
-* Backend: Node.js + Express
-* Database: MongoDB Atlas
+---
 
-##  Project Structure
+## Demo Login Credentials
+**Admin Email:** shiva@example.com  
+**Password:** 123456  
 
-* client → React frontend
-* server → Express backend
+---
 
-##  How to Run
+# Project Overview
+Team Task Manager is a full-stack web application that helps teams manage tasks efficiently with authentication, dashboard analytics, task creation, task assignment, and status tracking.
 
-### Backend
+---
 
-cd server
-npm install
-npm run dev
+# Features
+- User Login Authentication (JWT)
+- Admin Dashboard
+- Task Creation
+- Task Assignment
+- Task List View
+- Task Status Update (Pending / In Progress / Completed)
+- Logout Functionality
+- MongoDB Atlas Database Integration
+- Fully Deployed Frontend + Backend
 
-### Frontend
+---
 
-cd client
-npm install
-npm run dev
+# Tech Stack
 
-##  Future Improvements
+## Frontend:
+- React (Vite)
+- React Router DOM
+- Axios
+- Tailwind CSS
 
-* Member dropdown
-* Better UI design
-* Deployment (Render + Vercel)
-* Task filtering/search
+## Backend:
+- Node.js
+- Express.js
+- MongoDB Atlas
+- Mongoose
+- JWT Authentication
+- Render Deployment
 
-## Author
+---
 
-Dasu Shivani
+# Installation (Local Setup)
+
+## Clone Repository
+```bash
+git clone https://github.com/Dasushivani/team-task-manager.git
+
