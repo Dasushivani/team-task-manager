@@ -1,56 +1,57 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-require("dotenv").config();
+const dotenv = require("dotenv");
 
-const authRoutes = require("./routes/authRoutes");
-const taskRoutes = require("./routes/taskRoutes");
+dotenv.config();
 
 const app = express();
 
-// Middleware
-app.use(express.json());
-
-// CORS Configuration (allows all localhost ports + deployed frontend)
+/* ---------------- CORS FIX ---------------- */
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // Allow requests with no origin (Thunder Client, Postman, mobile apps)
-      if (!origin) return callback(null, true);
-
-      // Allow any localhost port during development
-      if (
-        origin.startsWith("http://localhost:") ||
-        origin === "https://team-task-manager-gamma-blue.vercel.app"
-      ) {
-        return callback(null, true);
-      }
-
-      return callback(new Error("Not allowed by CORS"));
-    },
+    origin: [
+      "http://localhost:5173",
+      "http://localhost:5174",
+      "http://localhost:5175",
+      "http://localhost:5176",
+      "http://localhost:5177",
+      "http://localhost:5178",
+      "https://team-task-manager-3kxd.vercel.app",
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
 );
 
-// Routes
-app.get("/", (req, res) => {
-  res.json({ message: "API is working" });
-});
+/* ---------------- MIDDLEWARE ---------------- */
+app.use(express.json());
+
+/* ---------------- ROUTES ---------------- */
+const authRoutes = require("./routes/authRoutes");
+const taskRoutes = require("./routes/taskRoutes");
 
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
 
-// MongoDB Connection
+/* ---------------- ROOT TEST ---------------- */
+app.get("/", (req, res) => {
+  res.json({
+    message: "API is working",
+  });
+});
+
+/* ---------------- DB CONNECT ---------------- */
 mongoose
   .connect(process.env.MONGO_URI)
   .then(() => {
-    console.log("MongoDB Connected");
+    console.log("MongoDB connected successfully");
   })
   .catch((err) => {
-    console.log("Database connection failed:", err.message);
+    console.error("Database connection failed:", err.message);
   });
 
-// Server
+/* ---------------- SERVER ---------------- */
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
