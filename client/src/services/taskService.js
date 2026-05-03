@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5000/api/tasks";
+const API_URL = "https://team-task-manager-ye0r.onrender.com/api/tasks";
 
 const createTask = async (taskData) => {
   const token = localStorage.getItem("token");
