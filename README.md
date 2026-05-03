@@ -1,4 +1,3 @@
-# Team Task Manager
 
 ## Live Demo
 Frontend (Vercel): https://team-task-manager-3kxd.vercel.app  
